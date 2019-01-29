@@ -3,7 +3,6 @@ package com.LIcompany;
 import java.util.Random;
 
 public class Philosopher implements Runnable{
-    private static final int ROUNDS = 20;
     private Fork leftFork;
     private Fork rightFork;
     private Random random = new Random();
@@ -14,17 +13,12 @@ public class Philosopher implements Runnable{
     }
     @Override
     public void run() {
-        int sec;
         message("sat on the table");
 
         while (true) {
             message("takes the left fork");
             if (!leftFork.take()) {
-                sec = random.nextInt(4) + 1;
-                message("takes left fork. Thinks " + sec + " s.");
-
-                pause(sec);
-
+                pause(5, "takes left fork. Thinks ");
                 continue;
             }
 
@@ -33,9 +27,7 @@ public class Philosopher implements Runnable{
 
             for (int i = 0; i < 2; i++) {
                 if (!rightFork.take()) {
-                    sec = random.nextInt(4) + 1;
-                    message("right fork is taken. Thinks " + sec + " s.");
-                    pause(sec);
+                    pause(5, "right fork is taken. Thinks ");
                 } else {
                     rightForkTaken = true;
                     break;
@@ -43,36 +35,31 @@ public class Philosopher implements Runnable{
             }
 
             if(!rightForkTaken) {
-                sec = random.nextInt(4) + 1;
-                message("puts left f on the table");
                 leftFork.put();
-                pause(sec);
+                pause(5, "puts left fork on the table. thinks");
                 continue;
             }
 
-            sec = random.nextInt(9) + 1;
-            message("eats " + sec + " s.");
-            pause(sec);
+            pause(10, "eats");
 
-            sec = random.nextInt(4) + 1;
-            message("stops eating. ");
             rightFork.put();
             leftFork.put();
-            pause(sec);
-
+            pause(4,"stops eating.");
         }
     }
 
-    private void message(String message) {
-        System.out.println(Thread.currentThread().getName() + ": " + message);
-    }
+    private void pause(int maxSec, String message) {
+        int sec = random.nextInt(maxSec - 1) + 1;
+        message(message + " " + sec + " s.");
 
-    private void pause(int sec) {
         try {
             Thread.sleep(sec * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
+    private void message(String message) {
+        System.out.println(Thread.currentThread().getName() + ": " + message);
     }
 }
